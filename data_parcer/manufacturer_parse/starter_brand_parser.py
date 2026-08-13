@@ -3,7 +3,7 @@ from pathlib import Path
 from car_parser import CarParser
 
 
-OUTPUT_FILE = Path("brands_models.json")
+OUTPUT_FILE = Path("../brands_models.json")
 
 print("=" * 60)
 print("BRANDS COLLECTION")

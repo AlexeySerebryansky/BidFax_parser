@@ -1,10 +1,12 @@
+import os
+
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
-from data_parcer.bright_data_client import BrightDataClient
+from brightdata_client.bright_data_client import BrightDataClient
 
 
-BASE_URL = "https://bidfax.info/"
+BASE_URL = os.getenv("BASE_URL")
 
 
 class CarParser:

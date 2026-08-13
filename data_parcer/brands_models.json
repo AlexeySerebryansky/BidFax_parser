@@ -323,7 +323,6 @@
         "viper",
         "w-series"
     ],
-    "ducati": [],
     "ferrari": [
         "458",
         "458-italia",
@@ -563,7 +562,6 @@
         "wrangler",
         "wrangler-unlimited"
     ],
-    "kawasaki": [],
     "kia": [
         "cadenza",
         "carnival",
@@ -685,7 +683,6 @@
         "speed",
         "tribute"
     ],
-    "mclaren-automotive": [],
     "mercedes-benz": [
         "a-class",
         "amg-gt",
@@ -719,7 +716,6 @@
         "metris",
         "sprinter"
     ],
-    "mercury": [],
     "mini": [
         "cooper",
         "cooper-coupe",
@@ -774,7 +770,6 @@
         "xterra",
         "nx"
     ],
-    "polaris": [],
     "polestar": [
         "2",
         "p3"
@@ -833,7 +828,6 @@
         "9-5",
         "9-7x"
     ],
-    "saturn": [],
     "scion": [
         "fr-s",
         "frs",
@@ -994,6 +988,5 @@
         "xc60",
         "xc70",
         "xc90"
-    ],
-    "yamaha": []
+    ]
 }
