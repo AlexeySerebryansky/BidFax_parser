@@ -1,4 +1,4 @@
-from data_parcer.brightdata_client.bright_data_client import BrightDataClient
+from data_parser.brightdata_client.bright_data_client import BrightDataClient
 from url_parser.get_lot_url import LotParser
 
 
