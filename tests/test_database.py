@@ -1,5 +1,5 @@
 from database.session_manager import _session_factory
-from database.models import Car
+from database import Car
 from database.repository import (
     add_car,
     get_car_by_url,

@@ -1,12 +1,12 @@
 from brightdata_client.bright_data_client import BrightDataClient
-from url_parser.get_lot_url import LotParser
-from url_parser.page_iterator import PageIterator
+from url_parser.modules.get_lot_url import LotURLParser
+from url_parser.modules.page_iterator import PageIterator
 
 
 def test_page_iterator():
 
     client = BrightDataClient()
-    parser = LotParser(client)
+    parser = LotURLParser(client)
 
     iterator = PageIterator(
         parser=parser,

@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from car_parser import CarParser
+from manufacturer_parse.car_parser import CarParser
 
 
 OUTPUT_FILE = Path("../brands_models.json")

@@ -1,4 +1,4 @@
-from url_parser.page_iterator import PageIterator
+from url_parser.modules.page_iterator import PageIterator
 
 
 class UrlBatcher:

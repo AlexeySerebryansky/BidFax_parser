@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from car_parser import CarParser
+from manufacturer_parse.car_parser import CarParser
 
 OUTPUT_FILE = Path("../brands_models.json")
 
@@ -39,7 +39,6 @@ for index, brand in enumerate(brands, start=1):
 
         brands_models[brand] = models
 
-        # Сохраняем сразу после каждого бренда
         with OUTPUT_FILE.open("w", encoding="utf-8") as f:
             json.dump(
                 brands_models,
@@ -59,8 +58,6 @@ for index, brand in enumerate(brands, start=1):
             f"{brand}: ERROR -> {e}"
         )
 
-        # Ничего не записываем в этот бренд.
-        # Следующий запуск попробует его снова.
         continue
 
     print()

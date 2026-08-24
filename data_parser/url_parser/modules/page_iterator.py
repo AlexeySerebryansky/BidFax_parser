@@ -1,10 +1,10 @@
-from url_parser.get_lot_url import LotParser
+from url_parser.modules.get_lot_url import LotURLParser
 
 
 class PageIterator:
 
     def __init__(self,
-                 parser: LotParser,
+                 parser: LotURLParser,
                  brand: str,
                  model: int,
                  max_attempts: int = 2,
@@ -18,13 +18,13 @@ class PageIterator:
         self.start_page = start_page
         self.stop_page = stop_page
 
-        self.page = 1
+        self.page = self.start_page
 
     def next_page(self) -> list | None:
 
-        for attempt in range(1, self.max_attempts + 1):
+        while self.page <= self.stop_page:
 
-            while self.page <= self.stop_page:
+            for attempt in range(1, self.max_attempts + 1):
 
                 try:
                     urls = self.parser.get_lot_urls(
@@ -40,7 +40,7 @@ class PageIterator:
                 except Exception as e:
 
                     print(
-                        f"[ITERATOR] "
+                        f"\n[ITERATOR] "
                         f"{self.brand}/{self.model} | "
                         f"page={self.page} | "
                         f"attempt={attempt}/{self.max_attempts} | "
@@ -48,9 +48,9 @@ class PageIterator:
                     )
 
                 print(
-                    f"[ITERATOR] "
+                    f"\n[ITERATOR] "
                     f"{self.brand}/{self.model} | "
-                    f"page={self.page} | "
+                    f"page={self.stop_page} | "
                     f"FAILED after {self.max_attempts} attempts"
                 )
 
@@ -59,4 +59,4 @@ class PageIterator:
         return None
 
     def reset_page(self):
-        self.page = 1
+        self.page = self.start_page

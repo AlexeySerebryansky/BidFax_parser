@@ -5,16 +5,14 @@ from brightdata_client.bright_data_client import BrightDataClient
 from database.repository import add_car_urls
 from database.session_manager import get_session
 
-from url_parser.get_lot_url import LotParser
-from url_parser.page_iterator import PageIterator
-from url_parser.url_batcher import UrlBatcher
-from progress_manager import ProgressManager
-
-
+from url_parser.modules.get_lot_url import LotURLParser
+from url_parser.modules.page_iterator import PageIterator
+from url_parser.modules.url_batcher import UrlBatcher
+from url_parser.modules.progress_manager import ProgressManager
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BRANDS_FILE = PROJECT_ROOT / "data_parser" / "brands_models.json"
-PROGRESS_FILE = PROJECT_ROOT / "data_parser" /  "progress.json"
+PROGRESS_FILE = PROJECT_ROOT / "data_parser" / "url_parser" / "progress.json"
 
 
 def load_brands(path: Path) -> dict[str, list[str]]:
@@ -67,29 +65,38 @@ def choose_brand_and_model(brands: dict[str, list[str]]) -> tuple[str, str]:
 
 
 def choose_start_config(progress: ProgressManager) -> tuple[str | None, str | None, int]:
-    print("\nChoose starting point:")
-    print("1 - Start over")
-    print("2 - Start from last stop")
+    print(
+        "\n" +
+        "\n".join([
+            "=" * 60,
+            "Choose starting point:",
+            "=" * 60,
+            "1 - Start over",
+            "2 - Start from last stop:"
+        ])
+    )
+
+    saved_progress = progress.get_progress()
+
+    brand, model, page = saved_progress
+
+    print(
+        f"    Resuming from: "
+        f"{brand}/{model}, page={page}"
+    )
+
 
     while True:
         choice = input("> ")
 
         if choice == "1":
-            return None, None, 1
+            return None, None, 0
 
         if choice == "2":
-            saved_progress = progress.get_progress()
 
             if saved_progress is None:
                 print("No saved progress found. Starting from the beginning.")
-                return None, None, 1
-
-            brand, model, page = saved_progress
-
-            print(
-                f"Resuming from: "
-                f"{brand}/{model}, page={page}"
-            )
+                return None, None, 0
 
             return brand, model, page
 
@@ -98,7 +105,7 @@ def choose_start_config(progress: ProgressManager) -> tuple[str | None, str | No
 
 def process_model(
         progress: ProgressManager,
-        parser: LotParser,
+        parser: LotURLParser,
         brand: str,
         model: str,
         start_page: int = 1,
@@ -148,15 +155,18 @@ def process_model(
         total_urls += len(urls)
 
         print(
-            f"[MAIN] "
-            f"{brand}/{model} | "
+            f"[MAIN] {brand}/{model} | "
             f"saved batch={len(urls)} | "
             f"total={total_urls}"
         )
 
     print(
-        f"[MODEL] Finished {brand}/{model} | "
-        f"total={total_urls}"
+        "\n" +
+        "\n".join([
+            f"[MODEL] Finished {brand}/{model} | "
+            f"total={total_urls}\n",
+            "=" * 60
+        ])
     )
 
 
@@ -165,16 +175,39 @@ def starter():
 
     brands = load_brands(BRANDS_FILE)
 
-    progress = ProgressManager(BRANDS_FILE)
+    progress = ProgressManager(PROGRESS_FILE)
 
-    parser = LotParser(client=client)
+    parser =  LotURLParser(client=client)
 
-    print("=" * 60)
-    print("Choose mode:")
-    print("=" * 60)
+    print(
+        "\n" +
+        "\n".join([
+            "=" * 60,            "Choose stop page:",
+            "=" * 60
+        ])
+    )
+    stop_page = int(input("> "))
 
-    print("1 - Process one model")
-    print("2 - Process all models")
+    print(
+        "\n" +
+        "\n".join([
+            "=" * 60,
+            "Choose batch size for push in database:",
+            "=" * 60
+        ])
+    )
+    batch_size = int(input("> "))
+
+    print(
+        "\n" +
+        "\n".join([
+            "=" * 60,
+            "Choose mode:",
+            "=" * 60,
+            "1 - Process one model",
+            "2 - Process all models"
+        ])
+    )
 
     while True:
         mode = input("> ")
@@ -184,17 +217,7 @@ def starter():
 
         print("Invalid choice. Enter 1 or 2.")
 
-    resume_brand, resume_model, start_page = choose_start_config(progress)
-
-    print("=" * 60)
-    print("Choose stop page:")
-    print("=" * 60)
-    stop_page = int(input("> "))
-
-    print("=" * 60)
-    print("Choose batch size for push in database:")
-    print("=" * 60)
-    batch_size = int(input("> "))
+    resume_brand, resume_model, last_page = choose_start_config(progress)
 
     # ==================================================
     # PROCESS ONE MODEL
@@ -205,6 +228,7 @@ def starter():
 
         if resume_brand is not None:
             print(
+                "\n"
                 "[WARNING] Resume mode is only useful "
                 "when processing all models."
             )
@@ -214,7 +238,7 @@ def starter():
             parser=parser,
             brand=brand,
             model=model,
-            start_page=start_page,
+            start_page=last_page + 1,
             stop_page=stop_page,
             batch_size=batch_size
         )
@@ -234,6 +258,8 @@ def starter():
 
         print(f"\n[BRAND] Starting: {brand}")
 
+        start_page = last_page + 1
+
         for model in models:
 
             if resume:
@@ -251,8 +277,11 @@ def starter():
                     stop_page=stop_page,
                     batch_size=batch_size
                 )
+
+                start_page = 1
             except Exception as e:
                 print(
+                    "\n"
                     f"[MAIN] ERROR "
                     f"{brand}/{model}: {e}"
                 )

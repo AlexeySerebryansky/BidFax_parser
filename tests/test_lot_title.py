@@ -1,10 +1,10 @@
 from data_parser.brightdata_client.bright_data_client import BrightDataClient
-from url_parser.get_lot_url import LotParser
+from url_parser.modules.get_lot_url import LotURLParser
 
 
 def test_lot_title():
     client = BrightDataClient()
-    parser = LotParser(client)
+    parser = LotURLParser(client)
 
     urls = parser.get_lot_urls(
         brand="acura",

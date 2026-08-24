@@ -1,5 +1,5 @@
-from database.models import Car
-from url_parser.url_batcher import UrlBatcher
+from database import Car
+from url_parser.modules.url_batcher import UrlBatcher
 
 
 class FakeIterator:
