@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-BASE_URL = "https://bidfax.info/"
+BASE_URL = "https://en.bidfax.info/"
 
 
 class LotURLParser:

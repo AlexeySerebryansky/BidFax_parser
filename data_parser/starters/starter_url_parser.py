@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from brightdata_client.bright_data_client import BrightDataClient
+from client.brightdata_client import BrightDataClient
 from database.repository import add_car_urls
 from database.session_manager import get_session
 

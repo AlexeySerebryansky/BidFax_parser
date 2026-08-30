@@ -14,6 +14,7 @@ from sqlalchemy import (
 
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 
@@ -42,8 +43,11 @@ class Car(Base):
         index=True
     )
 
+    brand: Mapped[str | None] = mapped_column(String(25))
+    model: Mapped[str | None] = mapped_column(String(25))
+
     auction: Mapped[str | None] = mapped_column(String(50))
-    lot_number: Mapped[int | None] = mapped_column(String(50))
+    lot_number: Mapped[str | None] = mapped_column(String(50))
     sale_date: Mapped[Date | None] = mapped_column(Date)
 
     year: Mapped[int | None] = mapped_column(SmallInteger)
@@ -75,8 +79,14 @@ class Car(Base):
         ARRAY(Text)
     )
 
-    previous_auctions: Mapped[list[str] | None] = mapped_column(
-        ARRAY(Text)
+    previous_auctions: Mapped[dict[str, int] | None] = mapped_column(
+        JSONB
+    )
+
+    worker_status: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+        default="free"
     )
 
     created_at: Mapped[datetime] = mapped_column(

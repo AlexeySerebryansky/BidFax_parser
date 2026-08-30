@@ -1,4 +1,4 @@
-from brightdata_client.bright_data_client import BrightDataClient
+from client.brightdata_client import BrightDataClient
 from url_parser.modules.get_lot_url import LotURLParser
 from url_parser.modules.page_iterator import PageIterator
 
