@@ -7,7 +7,7 @@ from car_lot_parser.lot_parser import LotParser
 from car_lot_parser.db_writer import DBWriter
 from car_lot_parser.car_worker import Worker
 
-from database.session_manager import get_session
+from database import get_session
 
 brands_path = Path(__file__).parent.parent.parent /"data_parser" / "brands_models.json"
 

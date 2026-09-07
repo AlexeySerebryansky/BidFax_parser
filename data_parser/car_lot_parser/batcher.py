@@ -1,17 +1,19 @@
 from sqlalchemy import or_, select
 
-from database.models import Car
+from database import Car
 
 
 class CarBatcher:
 
     REQUIRED_FIELDS = {
+        "brand",
+        "model",
         "auction",
         "lot_number",
         "sale_date",
         "year",
         "vin",
-        "final_bid",
+        "final_bid"
     }
 
     def __init__(self, session_factory, batch_size: int = 20):

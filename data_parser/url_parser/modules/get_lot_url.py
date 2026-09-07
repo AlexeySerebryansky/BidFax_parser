@@ -10,16 +10,19 @@ class LotURLParser:
 
     def _get_html(self, url: str) -> str:
         html = self.client.get_html(url)
+
         return html
 
-    def _get_soup(self, html: str) -> BeautifulSoup:
+    @staticmethod
+    def _get_soup(html: str) -> BeautifulSoup:
         soup = BeautifulSoup(
             html,
             "html.parser",
         )
         return soup
 
-    def _list_car_urls(self, soup: BeautifulSoup) -> list | None:
+    @staticmethod
+    def _list_car_urls(soup: BeautifulSoup) -> list | None:
 
         links = soup.select(
             "#grid .thumbnail.offer .caption a[href]"
@@ -48,7 +51,7 @@ class LotURLParser:
 
         counter = 0
 
-        while True:
+        while counter < 3:
             counter += 1
 
             html = self._get_html(url)
@@ -65,3 +68,5 @@ class LotURLParser:
             print(
                 f"[LOTS] No URLs found. Loop {counter} starting"
             )
+
+        return None

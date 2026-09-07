@@ -35,7 +35,10 @@ class PageIterator:
 
                     self.page += 1
 
-                    return urls
+                    if urls is None:
+                        return None
+                    else:
+                        return urls
 
                 except Exception as e:
 

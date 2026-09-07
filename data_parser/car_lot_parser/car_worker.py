@@ -46,37 +46,40 @@ class Worker:
 
     def run(self) -> None:
         print(f"[WORKER ({self.worker_id})] Started")
+        try:
+            while True:
+                batch = self.batcher.next_batch()
 
-        while True:
-            batch = self.batcher.next_batch()
+                if batch is None:
+                    print(f"[WORKER ({self.worker_id})] No more cars to process")
+                    break
 
-            if batch is None:
-                print(f"[WORKER ({self.worker_id})] No more cars to process")
-                break
+                results = []
 
-            results = []
+                for car_id, url in batch:
+                    print(f"[WORKER ({self.worker_id})] car id - {car_id} in processing. URL: {url}")
+                    try:
+                        result = self._process_url(
+                            car_id,
+                            url,
+                        )
 
-            for car_id, url in batch:
-                print(f"[WORKER ({self.worker_id})] car id - {car_id} in processing. URL: {url}")
-                try:
-                    result = self._process_url(
-                        car_id,
-                        url,
-                    )
+                    except Exception as exc:
+                        print(
+                            f"[WORKER ({self.worker_id})] Error processing "
+                            f"{exc}"
+                        )
 
-                except Exception as exc:
-                    print(
-                        f"[WORKER ({self.worker_id})] Error processing "
-                        f"{exc}"
-                    )
+                        result = {
+                            "id": car_id,
+                            "url": url,
+                        }
 
-                    result = {
-                        "id": car_id,
-                        "url": url,
-                    }
+                    results.append(result)
 
-                results.append(result)
+                self.db_writer.write(results)
 
-            self.db_writer.write(results)
+        finally:
+            self.client.close()
 
         print(f"[WORKER ({self.worker_id})] Finished")

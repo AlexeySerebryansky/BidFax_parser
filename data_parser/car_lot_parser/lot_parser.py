@@ -146,7 +146,7 @@ class LotParser:
         return int(float(value))
 
     def _parse_brand_model(self, soup: BeautifulSoup) -> dict:
-        title = soup.find("title")
+        title = soup.find("h1")
 
         if not title:
             return {
@@ -154,8 +154,7 @@ class LotParser:
                 "model": None,
             }
 
-        title = title.get_text(strip=True)
-
+        title = title.get_text(" ", strip=True)
         parts = title.split()
 
         if not parts:
@@ -163,6 +162,7 @@ class LotParser:
                 "brand": None,
                 "model": None,
             }
+
         brand = self.brand_repository.find_brand(parts)
 
         if not brand:
@@ -172,7 +172,6 @@ class LotParser:
             }
 
         brand_parts = brand.split()
-
         model_start = len(brand_parts)
 
         year_index = next(

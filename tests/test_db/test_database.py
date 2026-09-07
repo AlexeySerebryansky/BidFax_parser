@@ -1,6 +1,6 @@
-from database.session_manager import _session_factory
+from database import _session_factory
 from database import Car
-from database.repository import (
+from database import (
     add_car,
     get_car_by_url,
     delete_car_by_url,

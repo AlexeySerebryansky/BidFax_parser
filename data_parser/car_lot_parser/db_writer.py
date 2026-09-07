@@ -1,4 +1,4 @@
-from database.models import Car
+from database import Car
 
 
 class DBWriter:

@@ -1,7 +1,7 @@
 from sqlalchemy import inspect
 
 from database.connection import engine
-from database.models import Car
+from database import Car
 
 
 def normalize_type(column_type):
