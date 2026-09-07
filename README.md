@@ -637,7 +637,7 @@ The primary purpose of **BidFax Parser** is to automatically collect structured 
 
 The complete current pipeline can be summarized as:
 
-
+```text
 BidFax
   │
   ▼
@@ -660,7 +660,7 @@ PostgreSQL
   │
   ▼
 Dataset
-
+```
 
 The parser is not intended to be the final product.
 
