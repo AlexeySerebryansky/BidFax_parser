@@ -48,11 +48,14 @@ class Worker:
         print(f"[WORKER ({self.worker_id})] Started")
         try:
             while True:
+
                 batch = self.batcher.next_batch()
 
                 if batch is None:
                     print(f"[WORKER ({self.worker_id})] No more cars to process")
                     break
+
+                print(f"[WORKER ({self.worker_id})] reserved {len(batch)} cars")
 
                 results = []
 
@@ -63,6 +66,8 @@ class Worker:
                             car_id,
                             url,
                         )
+
+                        print(f"[WORKER ({self.worker_id})] car id - {car_id} done")
 
                     except Exception as exc:
                         print(
@@ -79,7 +84,13 @@ class Worker:
 
                 self.db_writer.write(results)
 
+                print(
+                    f"[WORKER ({self.worker_id})] wrote results to database. ",
+                    flush=True,
+                )
+
         finally:
+            print(f"[WORKER ({self.worker_id})] Finished and closing")
             self.client.close()
 
-        print(f"[WORKER ({self.worker_id})] Finished")
+        print(f"[WORKER ({self.worker_id})] closed")

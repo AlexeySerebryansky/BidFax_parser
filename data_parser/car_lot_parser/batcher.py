@@ -1,6 +1,6 @@
 from sqlalchemy import or_, select
 
-from database import Car
+from database.models import Car
 
 
 class CarBatcher:
@@ -60,10 +60,5 @@ class CarBatcher:
                 car.worker_status = "lock"
 
             session.commit()
-
-        print(
-            f"[BATCHER] "
-            f"Reserved {len(batch)} cars"
-        )
 
         return batch
