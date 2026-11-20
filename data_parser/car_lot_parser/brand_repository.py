@@ -9,7 +9,7 @@ class BrandRepository:
             brands = json.load(file)
 
         self.brands = sorted(
-            brands.keys(),
+            (brand.replace("-", " ") for brand in brands.keys()),
             key=lambda brand: len(brand.split()),
             reverse=True,
         )

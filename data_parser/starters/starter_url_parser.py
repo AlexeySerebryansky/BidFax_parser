@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from brightdata_client.bright_data_client import BrightDataClient
 from client.gologin_client.go_login_client import GoLoginClient
 
 from database.repository import add_car_urls
@@ -172,7 +173,7 @@ def process_model(
 
 
 def starter():
-    client = GoLoginClient("1")
+    client = GoLoginClient("10")
 
     brands = load_brands(BRANDS_FILE)
 

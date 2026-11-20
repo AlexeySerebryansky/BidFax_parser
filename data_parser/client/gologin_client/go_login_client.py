@@ -10,7 +10,6 @@ load_dotenv()
 
 class GoLoginClient:
     MAX_OPEN_RETRIES = 3
-    MAX_CHECK_RETRIES = 3
 
     OPEN_TIMEOUT = 30
     COMMAND_TIMEOUT = 30
@@ -31,18 +30,7 @@ class GoLoginClient:
 
         self.session_id = f"worker-{worker_id}"
 
-    @staticmethod
-    def _is_cloudflare(title: str) -> bool:
-        markers = (
-            "Just a moment",
-            "Checking your browser",
-            "Verify you are human"
-        )
-
-        return any(
-            marker.lower() in title.lower()
-            for marker in markers
-        )
+    
 
     def _get_profile_id(self) -> str:
         env_name = (
@@ -259,8 +247,8 @@ class GoLoginClient:
             )
 
     def get_html(self, url: str) -> str:
-        for open_attempt in range(1, self.MAX_OPEN_RETRIES + 1):
 
+        for open_attempt in range(1, self.MAX_OPEN_RETRIES + 1):
             try:
                 self._run(
                     "open",
@@ -269,7 +257,6 @@ class GoLoginClient:
                     self.profile_id,
                     "--session",
                     self.session_id,
-                    "--background",
                     timeout=self.OPEN_TIMEOUT,
                 )
 
@@ -281,59 +268,33 @@ class GoLoginClient:
                 )
                 continue
 
-            for check_attempt in range(1, self.MAX_CHECK_RETRIES + 1):
+        try:
+            sleep(self.CHECK_DELAY)
 
-                try:
-                    title = self._run(
-                        "get",
-                        "title",
-                        "--session",
-                        self.session_id,
-                        timeout=self.COMMAND_TIMEOUT,
-                    ).strip()
+            html = self._run(
+                "get",
+                "html",
+                "--session",
+                self.session_id,
+                timeout=self.COMMAND_TIMEOUT,
+            )
 
-                    if self._is_cloudflare(title):
-                        print(
-                            f"[GOLOGIN ({self.profile_id})] "
-                            f"Cloudflare detected",
-                            flush=True,
-                        )
+            return html
 
-                        sleep(self.CHECK_DELAY)
-                        continue
+        except subprocess.TimeoutExpired:
+            print(
+                f"[GOLOGIN ({self.profile_id})] "
+                f"GET timeout, reopening page",
+                flush=True,
+            )
 
-                    html = self._run(
-                        "get",
-                        "html",
-                        "--session",
-                        self.session_id,
-                        timeout=self.COMMAND_TIMEOUT,
-                    )
+        sleep(self.CHECK_DELAY)
 
-                    if len(html) >= self.MIN_LEN_HTML:
-                        return html
-
-                    print(
-                        f"[GOLOGIN - Worker ({self.worker_id})] "
-                        f"HTML is too small, retrying {check_attempt}/3",
-                        flush=True,
-                    )
-
-                except subprocess.TimeoutExpired:
-                    print(
-                        f"[GOLOGIN ({self.profile_id})] "
-                        f"GET timeout, reopening page",
-                        flush=True,
-                    )
-                    break
-
-                sleep(self.CHECK_DELAY)
         raise TimeoutError(
             f"BidFax did not finish loading: {url}"
         )
 
     def close(self):
-
         try:
             self._run_close()
 
@@ -349,13 +310,10 @@ class GoLoginClient:
                 flush=True,
             )
 
-
             self._kill_profile_browser()
 
-
-        finally:
-            print(
-                f"[GOLOGIN ({self.session_id})] "
-                f"Session {self.worker_id} closed",
-                flush=True,
-            )
+        print(
+            f"[GOLOGIN ({self.session_id})] "
+            f"Session {self.worker_id} closed",
+            flush=True,
+        )
